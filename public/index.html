@@ -40,8 +40,8 @@
                 <div style="display: flex; align-items: center; gap: 30px;">
                     <div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
                     <div id="personajes">
-                        <img id="ludo" src="img/ludoprueba.jpeg" alt="Ludovico" draggable="true" ondragstart="drag(event)" class="ludoPerso">
-                        <img id="flaqui" src="img/fedeprueba2.jpeg" alt="Federica" draggable="true" ondragstart="drag(event)" class="fedePerso">
+                        <img id="ludovico" src="img/ludoprueba.jpeg" alt="Ludovico" draggable="true" ondragstart="drag(event)" class="ludoPerso">
+                        <img id="federica" src="img/fedeprueba2.jpeg" alt="Federica" draggable="true" ondragstart="drag(event)" class="fedePerso">
                     </div>
                 </div>
                 <button id="startGameButton" class="pokemon-button">
@@ -161,7 +161,7 @@
             document.getElementById("startGameButton").addEventListener("click", function() {
                 let personaje = localStorage.getItem("personaje");
                 alert(`¡Comenzando el juego con ${personaje}!`);
-                window.location.href='public/niv1.html'
+                window.location.href='niv1.html'
             });
         
             document.getElementById('savePlayerButton').addEventListener('click', function() {
@@ -183,10 +183,12 @@
 
                 let records = JSON.parse(localStorage.getItem('records')) || [];
                 let playerIndex = records.findIndex(player => player.name === playerName);
+                let nombre_PreGuardado = localStorage.getItem('NombreProv') || ''; 
 
                 if (playerIndex !== -1) {
                     records[playerIndex].score = 0; 
                     alert(`¡Bienvenido de nuevo, ${playerName}!`);
+                    nombre_PreGuardado=playerName;
                 } else {
                     let newPlayer = { 
                         name: playerName, 
@@ -195,8 +197,10 @@
                     };
                     records.push(newPlayer);
                     alert(`¡Bienvenido, ${playerName}`);
+                    nombre_PreGuardado=playerName;
                 }
                 localStorage.setItem('records', JSON.stringify(records));
+                localStorage.setItem('NombreProv', nombre_PreGuardado); 
                 
                 document.getElementById('playerModal').style.display = 'none';
                 let dropPerson = document.getElementById('dropPerson');

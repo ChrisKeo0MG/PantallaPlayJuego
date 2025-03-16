@@ -172,6 +172,8 @@
                     MensError.style.display = 'block';
                     return;
                 }
+                const fecha = new Date().toISOString(); 
+
                 let records = JSON.parse(localStorage.getItem('records')) || [];
                 let playerIndex = records.findIndex(player => player.name === playerName);
 
@@ -179,11 +181,16 @@
                     records[playerIndex].score = 0; 
                     alert(`¡Bienvenido de nuevo, ${playerName}!`);
                 } else {
-                    let newPlayer = { name: playerName, score: 0 };
+                    let newPlayer = { 
+                        name: playerName, 
+                        score: 0,
+                        date: fecha  
+                    };
                     records.push(newPlayer);
                     alert(`¡Bienvenido, ${playerName}`);
                 }
                 localStorage.setItem('records', JSON.stringify(records));
+                
                 document.getElementById('playerModal').style.display = 'none';
                 let dropPerson = document.getElementById('dropPerson');
                 dropPerson.style.display = 'block';

@@ -62,6 +62,7 @@ function preload ()
     this.load.audio('golpe','assets/golpe.mp3');
     this.load.audio('daño','assets/Daño.mp3');
     this.load.image('Sound','assets/sound.png');
+    this.load.image('SoundOver','assets/GameOver.mp3');
     
 }
 
@@ -174,6 +175,7 @@ function create ()
     sounds.interactive.push(this.sound.add('eat',{volume:0.5}));
     sounds.interactive.push(this.sound.add('golpe',{volume:0.5}));
     sounds.interactive.push(this.sound.add('daño',{volume:4}));
+    sounds.interactive.push(this.sound.add('SoundOver',{volume:4}));
     
 
     
@@ -347,6 +349,12 @@ function hitEnemy(player, enemy) {
 
         // Si no quedan vidas, termina el juego
         if (vidas.getChildren().length === 0) {
+            if(Flag_Sound_Pause==false){
+                sounds.interactive[2].stop();
+                sounds.interactive[3].play();
+            }else{
+                sounds.interactive[3].stop();
+            }
             this.physics.pause();
             player.setTint(0xff0000);
             player.anims.stop();
@@ -393,8 +401,9 @@ function stompEnemy(player, enemy) {
     }
 }
 
-function gameOver() {
-    document.getElementById("game-over-screen").style.display = "flex";
+function showGameOverScreen() {
+    const gameOverScreen = document.getElementById('game-over-screen');
+    gameOverScreen.style.display = 'flex'; // Muestra la pantalla de Game Over
 }
 
 function Menu() {

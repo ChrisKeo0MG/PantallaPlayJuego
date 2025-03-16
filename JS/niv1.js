@@ -22,7 +22,7 @@ var stars;
 var bombs;
 var platforms;
 var cursors;
-var score = 0;
+var scoreNuevo = 0;
 var gameOver = false;
 var scoreText;
 var backgraund;
@@ -39,6 +39,12 @@ var sounds={
     theme:null,
     interactive:[]
 };
+var NameJug;
+let ObjJug=JSON.parse(localStorage.getItem('records'));
+let seleccion=localStorage.getItem('personaje');
+let NomBusc=localStorage.getItem('NombreProv');
+let NomPlayer = ObjJug.find(jugador => jugador.name === NomBusc);
+let scoreJug=NomPlayer.score;
 
 function preload ()
 {
@@ -46,7 +52,7 @@ function preload ()
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/paken_flakes.jpg');
     this.load.image('bomb', 'assets/bomb.png');
-    this.load.spritesheet('jugador', 'assets/ludovico.png', { frameWidth: 35, frameHeight: 58 });
+    this.load.spritesheet('jugador', `assets/${seleccion}.png`, { frameWidth: 35, frameHeight: 58 });
     this.load.spritesheet('enemy', 'assets/policia.png', { frameWidth: 35, frameHeight: 58 });
     this.load.image('life','assets/vida.png');
     this.load.image('PowUp','assets/powUp.png');
@@ -130,6 +136,11 @@ function create ()
         vidas.add(cont);
     }
 
+    //Colocamos nombre del jugador:
+
+    
+    NameJug = this.add.text(2500, -550, 'Nombre: ' + NomPlayer.name, { fontSize: '100px', fill: '#000' });
+ 
     //Creamos Power Up
 
     
@@ -300,8 +311,8 @@ function collectStar (player, star)
    
 
     //  Add and update the score
-    score += 10;
-    scoreText.setText('Score: ' + score);
+    scoreNuevo += 10;
+    scoreText.setText('Score: ' + scoreNuevo);
 
     if (stars.countActive(true) === 0)
     {
@@ -340,6 +351,14 @@ function hitEnemy(player, enemy) {
             player.setTint(0xff0000);
             player.anims.stop();
             gameOver = true;
+            let Pantalla_GameOver=document.getElementById('game-over-screen');
+            Pantalla_GameOver.style.display='block';
+            if(scoreNuevo>scoreJug){
+                NomPlayer.score = scoreNuevo;  // Cambiamos el puntaje al nuevo
+                // Actualizamos el array completo en el localStorage
+                localStorage.setItem('records', JSON.stringify(ObjJug));
+            }
+            
         } else {
            
             if (player.x < enemy.x) {
@@ -372,4 +391,13 @@ function stompEnemy(player, enemy) {
         enemy.destroy(); 
         player.setVelocityY(-1000); 
     }
+}
+
+function gameOver() {
+    document.getElementById("game-over-screen").style.display = "flex";
+}
+
+function Menu() {
+    document.getElementById("game-over-screen").style.display = "none";
+    window.location.href = "index.html";
 }

@@ -15,7 +15,7 @@ var config = {
         update: update
     }
 };
-
+var powerUpActive = false; 
 var player;
 var enemy;
 var stars;
@@ -37,6 +37,8 @@ var Flag_Sound_Pause=false;
 var game = new Phaser.Game(config);
 var sounds={
     theme:null,
+    over:null,
+    win:null,
     interactive:[]
 };
 var NameJug;
@@ -45,6 +47,7 @@ let seleccion=localStorage.getItem('personaje');
 let NomBusc=localStorage.getItem('NombreProv');
 let NomPlayer = ObjJug.find(jugador => jugador.name === NomBusc);
 let scoreJug=NomPlayer.score;
+var powup;
 
 function preload ()
 {
@@ -58,18 +61,24 @@ function preload ()
     this.load.image('PowUp','assets/powUp.png');
     this.load.image('pause','assets/pausa.png');
     this.load.audio('eat','assets/eat.mp3');
-    this.load.audio('theme','assets/Sonidofondo.mp3');
+    this.load.audio('theme','assets/SonidoFondo.mp3');
     this.load.audio('golpe','assets/golpe.mp3');
     this.load.audio('daño','assets/Daño.mp3');
     this.load.image('Sound','assets/sound.png');
-    this.load.image('SoundOver','assets/GameOver.mp3');
+    console.log('Cargando sonido de Game Over...');
+    this.load.audio('over', 'assets/GameOver.mp3');
+    console.log('Cargando sonido de Win...');
+    this.load.audio('win', 'assets/Ganador.mp3');
+    
+    
+    
     
 }
 
 function create ()
 {
 
-
+    console.log('Sonido de Game Over cargado:', sounds.over);
     //  A simple background for our game
     backgraund=this.add.image(0, 0, 'sky').setOrigin(0,0);
     backgraund.displayWidth = 3500; // Ancho del juego
@@ -144,8 +153,53 @@ function create ()
  
     //Creamos Power Up
 
-    
+    powup = this.physics.add.image(Phaser.Math.Between(200, 3000), 0, 'PowUp').setScale(0.5).setAlpha(0);
+    powup.setGravityY(100);
+    powup.setCollideWorldBounds(true);
 
+    // Hacer que el power-up desaparezca después de un tiempo
+    this.time.addEvent({
+        delay: Phaser.Math.Between(2000, 3000), 
+        callback: spawnPowerUp,
+        callbackScope: this,
+        loop: true // Hacerlo en bucle para que siga apareciendo
+    });
+
+    function spawnPowerUp() {
+        if (!powerUpActive) {  // Solo aparecerá si no hay un power-up activo
+            // Destruir el power-up anterior si existe
+            if (powup) {
+                powup.destroy();
+            }
+    
+            // Crear un nuevo power-up
+            powup = this.physics.add.image(Phaser.Math.Between(200, 3000), 0, 'PowUp').setScale(0.5).setAlpha(1);
+            powup.setGravityY(1000);
+            powup.setCollideWorldBounds(true);
+    
+            // Añadir colisiones con las plataformas
+            this.physics.add.collider(powup, platforms);
+    
+            // Añadir superposición con el jugador
+            this.physics.add.overlap(player, powup, collectPowerUp, null, this);
+    
+            // Hacer que el power-up desaparezca después de un tiempo
+            this.time.addEvent({
+                delay: 1000, // Desaparece después de 5 segundos
+                callback: function() {
+                    if (powup) {
+                        powup.setAlpha(0); // Desaparece el power-up
+                        powup.setVelocity(0, 0); // Detener el movimiento
+                        powerUpActive = false; // El power-up ya no está activo
+                    }
+                },
+                loop: false
+            });
+    
+            powerUpActive = true;
+        }
+    }
+    
     //Creamos fisicas para el enemigo
 
     enemy=this.physics.add.group({
@@ -171,11 +225,12 @@ function create ()
     this.input.keyboard.once('keydown', () => {
         sounds.theme.play();
     });
-
+    sounds.over=this.sound.add('over', { volume: 2, loop:true })
+    sounds.win=this.sound.add('win', { volume: 2, loop:true })
     sounds.interactive.push(this.sound.add('eat',{volume:0.5}));
     sounds.interactive.push(this.sound.add('golpe',{volume:0.5}));
     sounds.interactive.push(this.sound.add('daño',{volume:4}));
-    sounds.interactive.push(this.sound.add('SoundOver',{volume:4}));
+    //sounds.interactive.push(this.sound.add('over',{volume:4}));
     
 
     
@@ -232,7 +287,7 @@ function create ()
 
     });
 
-    bombs = this.physics.add.group();
+
 
     //  The score
     scoreText = this.add.text(16, -550, 'score: 0', { fontSize: '100px', fill: '#000' });
@@ -241,14 +296,19 @@ function create ()
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(stars, platforms);
     this.physics.add.collider(bombs, platforms);
-    this.physics.add.collider(enemy,platforms)
+    this.physics.add.collider(enemy,platforms);
+    this.physics.add.collider(powup,platforms);
 
     //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
+    this.physics.add.overlap(player, powup, collectPowerUp, null, this);
+
     this.physics.add.overlap(player, stars, collectStar, null, this);
 
     this.physics.add.overlap(player, enemy, stompEnemy, null, this);
 
     this.physics.add.collider(player, enemy, hitEnemy, null, this);
+
+   
 
 }
 
@@ -303,11 +363,8 @@ function update ()
 
 function collectStar (player, star)
 {
-    if(Flag_Sound_Pause==false){
-        sounds.interactive[0].play();
-    }else{
-        sounds.interactive[0].stop();
-    }
+    sounds.interactive[0].play();
+  
     
     star.disableBody(true, true);
    
@@ -326,6 +383,23 @@ function collectStar (player, star)
         });
 
     }
+
+    if(scoreNuevo==220){
+        if(scoreNuevo>scoreJug){
+            NomPlayer.score = scoreNuevo;  // Cambiamos el puntaje al nuevo
+            // Actualizamos el array completo en el localStorage
+            localStorage.setItem('records', JSON.stringify(ObjJug));
+        }
+            sounds.theme.pause();
+            this.physics.pause();
+            player.setTint(0xff0000);
+            player.anims.stop();
+            gameOver = true;
+            let Pantalla_GameOver=document.getElementById('win-screen');
+            Pantalla_GameOver.style.display='block';
+            sounds.win.play();
+           
+    }
 }
 
 
@@ -337,11 +411,9 @@ function hitEnemy(player, enemy) {
     if (vidas.getChildren().length > 0 && flagVida) {
         // Establecer la bandera a falso para evitar perder más vidas inmediatamente
         flagVida = false;
-        if(Flag_Sound_Pause==false){
+        
             sounds.interactive[2].play();
-        }else{
-            sounds.interactive[2].stop();
-        }
+        
         player.setTint(0xff0000);
 
         let cont = vidas.getChildren()[vidas.getChildren().length - 1];
@@ -349,12 +421,7 @@ function hitEnemy(player, enemy) {
 
         // Si no quedan vidas, termina el juego
         if (vidas.getChildren().length === 0) {
-            if(Flag_Sound_Pause==false){
-                sounds.interactive[2].stop();
-                sounds.interactive[3].play();
-            }else{
-                sounds.interactive[3].stop();
-            }
+            sounds.theme.pause();
             this.physics.pause();
             player.setTint(0xff0000);
             player.anims.stop();
@@ -366,6 +433,7 @@ function hitEnemy(player, enemy) {
                 // Actualizamos el array completo en el localStorage
                 localStorage.setItem('records', JSON.stringify(ObjJug));
             }
+            sounds.over.play();
             
         } else {
            
@@ -391,11 +459,9 @@ function hitEnemy(player, enemy) {
 
 function stompEnemy(player, enemy) {
     if (player.body.bottom <= enemy.body.top + 40) { 
-        if(Flag_Sound_Pause==false){
-            sounds.interactive[1].play();
-        }else{
-            sounds.interactive[1].stop();
-        }
+     
+        sounds.interactive[1].play();
+      
         enemy.destroy(); 
         player.setVelocityY(-1000); 
     }
@@ -409,4 +475,35 @@ function showGameOverScreen() {
 function Menu() {
     document.getElementById("game-over-screen").style.display = "none";
     window.location.href = "index.html";
+}
+
+function Niv2() {
+    document.getElementById("game-over-screen").style.display = "none";
+    window.location.href = "niv2.html";
+}
+
+function collectPowerUp(player, powup) {
+    if (!powerUpActive) {
+        powerUpActive = true;
+
+        // Aumentamos la velocidad del jugador inmediatamente
+        velJug = VelPow;  
+
+        // Detenemos al jugador momentáneamente cuando toca el power-up
+        player.setVelocityX(0);
+        player.setVelocityY(0);
+
+        // Desactivar el power-up (lo "comió" el jugador)
+        powup.setAlpha(0); // Hacer que el power-up desaparezca
+        powup.setVelocity(0, 0); // Detener el movimiento del power-up
+
+        // Reproducir sonido de recolección
+        sounds.interactive[0].play();
+
+        // Volver a la velocidad normal inmediatamente después de "comer" el power-up
+        this.time.delayedCall(0, function() {
+            velJug = 1000; // Volver a la velocidad normal
+            powerUpActive = false; // El power-up ya no está activo
+        }, [], this);
+    }
 }

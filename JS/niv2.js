@@ -303,7 +303,7 @@ function create ()
   
 
     //  The score
-    scoreText = this.add.text(16, -550, 'score: 0', { fontSize: '100px', fill: '#000' });
+    scoreText = this.add.text(16, -550, 'score:', { fontSize: '100px', fill: '#000' });
 
     //  Collide the player and the stars with the platforms
     this.physics.add.collider(player, platforms);
@@ -395,6 +395,7 @@ function collectStar (player, star)
 
     //  Add and update the score
     scoreNuevo += 10;
+    console.log(scoreNuevo);
     scoreText.setText('Score: ' + scoreNuevo);
 
     if (stars.countActive(true) === 0)

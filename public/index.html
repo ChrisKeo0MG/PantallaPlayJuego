@@ -1,6 +1,7 @@
     <!DOCTYPE html>
     <html lang="es">
     <head>
+        <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Pantalla de Play</title>
@@ -11,6 +12,10 @@
 
     </head>
     <body id="body">
+        <audio id="backgroundMusic" loop>
+            <source src="assets/Familia P.Luche.mp3" type="audio/mpeg">
+            Tu navegador no soporta el elemento de audio.
+        </audio>
         <canvas id="backgroundCanvas"></canvas>
         <div class="logo">
             <img src="img/logofamilaip.png" alt="Logo del Juego"> <!-- Cambia la ruta de la imagen -->
@@ -91,6 +96,16 @@
         
 
  <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const backgroundMusic = document.getElementById('backgroundMusic');
+    
+    // Agrega un event listener para el clic en el botón de Play
+    document.getElementById('PlayButton').addEventListener('click', function() {
+        backgroundMusic.play().catch(error => {
+            console.log("La reproducción automática fue bloqueada. Haz clic en la página para reproducir.");
+        });
+    });
+});
 
             document.querySelectorAll('.pokemon-button').forEach(button => {
                 button.addEventListener('click', function() {
@@ -160,7 +175,6 @@
 
             document.getElementById("startGameButton").addEventListener("click", function() {
                 let personaje = localStorage.getItem("personaje");
-                alert(`¡Comenzando el juego con ${personaje}!`);
                 window.location.href='niv1.html'
             });
         
@@ -186,8 +200,8 @@
                 let nombre_PreGuardado = localStorage.getItem('NombreProv') || ''; 
 
                 if (playerIndex !== -1) {
-                    records[playerIndex].score = 0; 
-                    alert(`¡Bienvenido de nuevo, ${playerName}!`);
+                  
+                 
                     nombre_PreGuardado=playerName;
                 } else {
                     let newPlayer = { 
@@ -196,7 +210,7 @@
                         date: fecha  
                     };
                     records.push(newPlayer);
-                    alert(`¡Bienvenido, ${playerName}`);
+               
                     nombre_PreGuardado=playerName;
                 }
                 localStorage.setItem('records', JSON.stringify(records));

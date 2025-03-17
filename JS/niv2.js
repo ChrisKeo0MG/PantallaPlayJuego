@@ -1,3 +1,5 @@
+//Cambiooos
+
 var config = {
     type: Phaser.AUTO,
     width: 3500,
@@ -15,6 +17,7 @@ var config = {
         update: update
     }
 };
+var chris;
 var powerUpActive = false; 
 var player;
 var enemy;

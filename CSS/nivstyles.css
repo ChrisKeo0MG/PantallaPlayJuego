@@ -1,0 +1,129 @@
+body {
+    font-family: 'press Start 2P',cursive;
+    margin: 0;
+    width: 100%;
+    height: 100vh; /* Asegura que el body ocupe toda la altura */
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    background-image: url('../assets/FONDO.jpg');
+    background-size: cover; /* Ajusta el fondo para cubrir toda la pantalla */
+    background-position: center; /* Centra el fondo */
+}
+
+html {
+    height: 100%; /* Asegura que el html ocupe toda la altura */
+}
+
+canvas {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#game-over-screen {
+    font-family: 'Press Start 2P', cursive;
+    display: none; /* Ocultamos la pantalla por defecto */
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    z-index: 1000;
+}
+
+#game-over-screen .content {
+    font-family: 'Press Start 2P', cursive;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#game-over-screen h2 {
+    font-size: 60px;
+    margin-bottom: 20px;
+}
+
+#game-over-screen button {
+    background: red;
+    color: white;
+    box-shadow: 0 0 15px rgb(253, 0, 207), 0 0 40px rgba(175, 19, 162, 0.7);
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', cursive; 
+}
+
+#game-over-screen button:hover {
+    box-shadow: 0 0 15px rgb(0, 111, 255), 0 0 40px rgba(19, 113, 175, 0.7);
+}
+
+#win-screen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Caja de mensaje centrada */
+.message-box {
+    background: gray;  /* Fondo oscuro */
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0px 0px 15px rgba(0, 255, 255, 0.8); /* Borde cian */
+    color: white;
+    max-width: 500px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centrado exacto */
+}
+
+/* Texto dentro de la caja */
+#win-screen .message-box h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #0ff; /* Cian brillante */
+}
+
+/* GIF de victoria */
+#win-screen img {
+    width: 400px;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0px 0px 10px rgba(0, 255, 255, 0.6); /* Glow */
+}
+
+/* Botones */
+button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    font-size: 18px;
+    cursor: pointer;
+    background: #0ff; /* Cian brillante */
+    color: #111;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: 0.3s ease-in-out;
+}
+
+button:hover {
+    background: #00a3a3; /* Cian oscuro */
+    transform: scale(1.1);
+}

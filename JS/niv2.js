@@ -1,3 +1,5 @@
+//Cambiooos
+
 var config = {
     type: Phaser.AUTO,
     width: 3500,
@@ -15,11 +17,11 @@ var config = {
         update: update
     }
 };
+var chris;
 var powerUpActive = false; 
 var player;
 var enemy;
 var stars;
-var bombs;
 var platforms;
 var platform_Mov;
 var cursors;
@@ -55,7 +57,6 @@ function preload ()
     this.load.image('sky', 'assets/noche.jpeg');
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/paken_flakes.jpg');
-    this.load.image('bomb', 'assets/bomb.png');
     this.load.spritesheet('jugador', `assets/${seleccion}.png`, { frameWidth: 35, frameHeight: 58 });
     this.load.spritesheet('enemy', 'assets/policia.png', { frameWidth: 35, frameHeight: 58 });
     this.load.image('life','assets/vida.png');
@@ -299,17 +300,17 @@ function create ()
 
     });
 
-    bombs = this.physics.add.group();
+  
 
     //  The score
-    scoreText = this.add.text(16, -550, 'score: 0', { fontSize: '100px', fill: '#000' });
+    scoreText = this.add.text(16, -550, 'score:', { fontSize: '100px', fill: '#000' });
 
     //  Collide the player and the stars with the platforms
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(player, platform_Mov);
     this.physics.add.collider(stars, platforms);
     this.physics.add.collider(stars, platform_Mov);
-    this.physics.add.collider(bombs, platforms);
+
     this.physics.add.collider(enemy,platforms);
     this.physics.add.collider(enemy,platform_Mov);
     this.physics.add.collider(powup,platforms);
@@ -394,6 +395,7 @@ function collectStar (player, star)
 
     //  Add and update the score
     scoreNuevo += 10;
+    console.log(scoreNuevo);
     scoreText.setText('Score: ' + scoreNuevo);
 
     if (stars.countActive(true) === 0)
@@ -557,6 +559,11 @@ function playerDie() {
         Pantalla_GameOver.style.display = 'block';
 
         // Reproducir el sonido de Game Over
+        if(scoreNuevo>scoreJug){
+            NomPlayer.score = scoreNuevo;  // Cambiamos el puntaje al nuevo
+            // Actualizamos el array completo en el localStorage
+            localStorage.setItem('records', JSON.stringify(ObjJug));
+        }
         sounds.theme.stop();
         sounds.over.play();
     }

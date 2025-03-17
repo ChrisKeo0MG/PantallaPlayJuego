@@ -19,7 +19,7 @@ var powerUpActive = false;
 var player;
 var enemy;
 var stars;
-var bombs;
+
 var platforms;
 var cursors;
 var scoreNuevo = 0;
@@ -288,14 +288,13 @@ function create ()
     });
 
 
-
     //  The score
     scoreText = this.add.text(16, -550, 'score: 0', { fontSize: '100px', fill: '#000' });
 
     //  Collide the player and the stars with the platforms
     this.physics.add.collider(player, platforms);
     this.physics.add.collider(stars, platforms);
-    this.physics.add.collider(bombs, platforms);
+ 
     this.physics.add.collider(enemy,platforms);
     this.physics.add.collider(powup,platforms);
 
